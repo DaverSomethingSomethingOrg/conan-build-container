@@ -1,5 +1,7 @@
 FROM almalinux:latest
 
+USER root
+
 RUN dnf install -y 'dnf-command(config-manager)'
 
 # Configure the GitHub repo for the gh client
@@ -8,6 +10,7 @@ RUN dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.rep
 # VS Code requires git so we do that in Dockerfile before we get here
 RUN yum install --enablerepo crb -y \
     git \
+    sudo \
     tree \
     python3-pip
 
@@ -21,4 +24,5 @@ RUN groupadd -g 1001 luser && \
 SHELL ["/bin/bash", "-c"]
 
 # Set the default user
+WORKDIR /home/luser
 USER luser

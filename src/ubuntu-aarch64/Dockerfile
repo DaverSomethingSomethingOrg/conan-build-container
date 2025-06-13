@@ -1,5 +1,7 @@
 FROM ubuntu:latest
 
+USER root
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y
@@ -22,4 +24,5 @@ RUN groupadd -g 1001 luser && \
 SHELL ["/bin/bash", "-c"]
 
 # Set the default user
+WORKDIR /home/luser
 USER luser
