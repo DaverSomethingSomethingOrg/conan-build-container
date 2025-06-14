@@ -1,0 +1,19 @@
+FROM almalinux:latest
+
+USER root
+
+RUN dnf install -y 'dnf-command(config-manager)'
+
+# Configure the GitHub repo for the gh client
+RUN dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
+
+# VS Code requires git so we do that in Dockerfile before we get here
+RUN yum install --enablerepo crb -y \
+    procps-ng \
+    git \
+    sudo \
+    tree \
+    python3-pip
+
+COPY requirements.txt /tmp
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
