@@ -1,4 +1,4 @@
-FROM almalinux:latest
+FROM almalinux:latest AS build-base
 
 USER root
 
@@ -19,3 +19,10 @@ RUN yum install --enablerepo crb -y \
 
 COPY requirements.txt /tmp
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+FROM build-base AS bootstrap-base
+RUN yum install --enablerepo crb -y \
+    make \
+    binutils \
+    gcc \
+    gcc-c++

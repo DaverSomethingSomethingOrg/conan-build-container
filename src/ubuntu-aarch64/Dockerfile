@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:latest AS build-base
 
 USER root
 
@@ -18,3 +18,10 @@ RUN apt-get install --no-install-recommends -y \
 
 COPY requirements.txt /tmp
 RUN pip install --no-cache-dir  --break-system-packages -r /tmp/requirements.txt
+
+FROM build-base AS bootstrap-base
+RUN apt-get install --no-install-recommends -y \
+    make \
+    binutils \
+    gcc \
+    g++
