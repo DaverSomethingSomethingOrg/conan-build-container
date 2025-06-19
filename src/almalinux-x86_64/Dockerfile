@@ -21,6 +21,7 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 FROM build-base AS bootstrap-base
 RUN yum install --enablerepo crb -y \
     make \
+    cmake \
     binutils \
     gcc \
     gcc-c++
