@@ -15,7 +15,20 @@ RUN yum install --enablerepo crb -y \
     git \
     sudo \
     tree \
-    python3-pip
+    python3 \
+    python3-pip \
+    python-unversioned-command.noarch \
+    wget \
+    rpmdevtools \
+    rpmlint \
+    perl-File-Compare \
+    perl-FindBin \
+    perl-IPC-Cmd \
+    perl-Digest-SHA \
+    perl-threads \
+    perl-Thread-Queue \
+    perl-open \
+    texinfo
 
 COPY requirements.txt /tmp
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
@@ -26,4 +39,5 @@ RUN yum install --enablerepo crb -y \
     cmake \
     binutils \
     gcc \
-    gcc-c++
+    gcc-c++ \
+    libstdc++-static
