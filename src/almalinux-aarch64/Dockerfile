@@ -30,6 +30,8 @@ RUN yum install --enablerepo crb -y \
     perl-open \
     texinfo
 
+ENV CC=gcc
+
 COPY requirements.txt /tmp
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 

@@ -21,6 +21,8 @@ RUN apt-get install --no-install-recommends -y \
     debhelper \
     fakeroot
 
+ENV CC=gcc
+
 COPY requirements.txt /tmp
 RUN pip install --no-cache-dir  --break-system-packages -r /tmp/requirements.txt
 
