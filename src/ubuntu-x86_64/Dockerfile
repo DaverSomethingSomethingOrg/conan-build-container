@@ -20,6 +20,7 @@ RUN apt-get install --no-install-recommends -y \
     fakeroot
 
 ENV CC=gcc
+ENV CXX=g++
 
 COPY requirements.txt /tmp
 RUN pip install --no-cache-dir  --break-system-packages -r /tmp/requirements.txt

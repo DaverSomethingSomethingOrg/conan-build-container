@@ -28,9 +28,13 @@ RUN yum install --enablerepo crb -y \
     perl-threads \
     perl-Thread-Queue \
     perl-open \
-    texinfo
+    texinfo \
+    libstdc++-devel \
+    glibc-devel \
+    glibc-headers
 
 ENV CC=gcc
+ENV CXX=g++
 
 COPY requirements.txt /tmp
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
