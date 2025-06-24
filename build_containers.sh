@@ -26,7 +26,7 @@ docker build \
          src \
 && docker push \
             --platform ${docker_platform} \
-            ghcr.io/daversomethingsomethingorg/conan-base-almalinux:latest
+            ghcr.io/daversomethingsomethingorg/conan-base-almalinux:latest \
 && docker build \
             --file src/Dockerfile-almalinux \
             --target conan-bootstrap \
@@ -46,7 +46,7 @@ docker build \
             src \
 && docker push \
             --platform ${docker_platform} \
-            ghcr.io/daversomethingsomethingorg/conan-build-almalinux:latest
+            ghcr.io/daversomethingsomethingorg/conan-build-almalinux:latest \
 
 docker build \
             --no-cache \
@@ -57,7 +57,7 @@ docker build \
             src \
 && docker push \
             --platform ${docker_platform} \
-            ghcr.io/daversomethingsomethingorg/conan-base-ubuntu:latest
+            ghcr.io/daversomethingsomethingorg/conan-base-ubuntu:latest \
 && docker build \
             --file src/Dockerfile-ubuntu \
             --target conan-bootstrap \
