@@ -1,0 +1,56 @@
+FROM ubuntu:latest AS conan-base
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -y
+RUN apt-get install --no-install-recommends -y \
+    git \
+    sudo \
+    wget \
+    vim \
+    python3 \
+    python-is-python3 \
+    python3-pip \
+    python3-venv \
+    build-essential \
+    devscripts \
+    debhelper \
+    fakeroot
+
+ENV MINIMAL_PATH="${PATH}"
+ENV CC=gcc
+ENV CXX=g++
+
+# Make sure VIRTUAL_ENV PATH is always ahead of any other path to python
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+COPY requirements.txt /tmp
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+
+######################################################################
+# Bootstrapping image with Vendor gcc toolchain
+#
+FROM conan-base AS conan-bootstrap
+RUN apt-get install --no-install-recommends -y \
+    make \
+    cmake \
+    binutils \
+    gcc \
+    g++
+
+
+######################################################################
+# Build image with our own gcc toolchain
+#
+FROM conan-base AS conan-build
+ARG PKG_PREFIX="opt-toolchain-"
+ARG TOOLCHAIN_PREFIX="/opt/toolchain"
+
+RUN apt-get install --no-install-recommends -y \
+    ${PKG_PREFIX}make \
+    ${PKG_PREFIX}cmake \
+    ${PKG_PREFIX}binutils \
+    ${PKG_PREFIX}gcc
+
+ENV PATH="${VIRTUAL_ENV}/bin:${TOOLCHAIN_PREFIX}/bin:${MINIMAL_PATH}"

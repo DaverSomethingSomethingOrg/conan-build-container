@@ -7,3 +7,4 @@ mkdocs-minify-plugin
 markdown-callouts
 mkdocstrings[python]
 mike
+distro2sbom
