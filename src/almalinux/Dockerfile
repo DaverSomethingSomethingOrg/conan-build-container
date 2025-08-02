@@ -1,0 +1,84 @@
+FROM almalinux:latest AS conan-base
+
+RUN dnf install -y 'dnf-command(config-manager)'
+RUN yum install --enablerepo crb -y \
+    ca-certificates \
+    procps-ng \
+    git \
+    sudo \
+    tree \
+    python3 \
+    python3-pip \
+    python-unversioned-command.noarch \
+    wget \
+    rpmdevtools \
+    rpmlint \
+    perl-File-Compare \
+    perl-FindBin \
+    perl-IPC-Cmd \
+    perl-Digest-SHA \
+    perl-threads \
+    perl-Thread-Queue \
+    perl-open \
+    texinfo \
+    libstdc++-devel \
+    glibc-devel \
+    glibc-headers
+
+# Setup Certs and toolchain Yum repo(s)
+COPY config /
+RUN update-ca-trust
+
+ENV MINIMAL_PATH="${PATH}"
+ENV CC=gcc
+ENV CXX=g++
+
+# Make sure VIRTUAL_ENV PATH is always ahead of any other path to python
+ENV VIRTUAL_ENV="/opt/python-venv"
+RUN python3 -m venv "${VIRTUAL_ENV}"
+ENV PATH="${VIRTUAL_ENV}/bin:${MINIMAL_PATH}"
+COPY requirements.txt /tmp
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+
+######################################################################
+# Bootstrapping image with Vendor gcc toolchain
+#
+FROM conan-base AS conan-bootstrap
+RUN yum install --enablerepo crb -y \
+    make \
+    cmake \
+    binutils \
+    gcc \
+    gcc-c++ \
+    libstdc++-static
+
+
+######################################################################
+# Build image with our own gcc toolchain
+#
+FROM conan-base AS conan-build
+ARG PKG_PREFIX="opt-toolchain-"
+ARG TOOLCHAIN_PREFIX="/opt/toolchain"
+
+RUN yum install --enablerepo conan-toolchain -y \
+    ${PKG_PREFIX}make \
+    ${PKG_PREFIX}cmake \
+    ${PKG_PREFIX}binutils \
+    ${PKG_PREFIX}gcc
+
+ENV PATH="${VIRTUAL_ENV}/bin:${TOOLCHAIN_PREFIX}/bin:${MINIMAL_PATH}"
+
+FROM conan-build AS conan-docker-build
+
+# Configure Docker CE repo
+RUN dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+# Configure the GitHub repo for the gh client
+RUN dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
+
+# VS Code requires git so we do that in Dockerfile before we get here
+RUN yum install --enablerepo crb -y \
+    docker-ce \
+    gh \
+    ;

@@ -1,0 +1,8 @@
+[conan-toolchain]
+name=Packages for the Conan Toolchain
+baseurl=https://conan-toolchain-read:X5XnIwdxGjIAB1vV@nexus.homelab/repository/yum-homelab/conan-toolchain/almalinux/9.6/$basearch
+enabled=0
+sslverify=1
+gpgcheck=0
+#gpgcheck=1
+#gpgkey=https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x23F3D4EA75716059

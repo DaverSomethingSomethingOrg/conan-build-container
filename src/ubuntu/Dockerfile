@@ -1,37 +1,34 @@
-FROM almalinux:latest AS conan-base
+FROM ubuntu:latest AS conan-base
 
-RUN dnf install -y 'dnf-command(config-manager)'
-RUN yum install --enablerepo crb -y \
-    procps-ng \
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -y
+RUN apt-get install --no-install-recommends -y \
+    ca-certificates \
     git \
     sudo \
-    tree \
-    python3 \
-    python3-pip \
-    python-unversioned-command.noarch \
     wget \
-    rpmdevtools \
-    rpmlint \
-    perl-File-Compare \
-    perl-FindBin \
-    perl-IPC-Cmd \
-    perl-Digest-SHA \
-    perl-threads \
-    perl-Thread-Queue \
-    perl-open \
-    texinfo \
-    libstdc++-devel \
-    glibc-devel \
-    glibc-headers
+    vim \
+    python3 \
+    python-is-python3 \
+    python3-pip \
+    python3-venv \
+    build-essential \
+    devscripts \
+    debhelper \
+    fakeroot
+
+# Setup Certs and toolchain Apt repo(s)
+COPY config /
+RUN update-ca-certificates
 
 ENV MINIMAL_PATH="${PATH}"
 ENV CC=gcc
 ENV CXX=g++
 
 # Make sure VIRTUAL_ENV PATH is always ahead of any other path to python
-ENV VIRTUAL_ENV="/opt/venv"
-RUN python3 -m venv "${VIRTUAL_ENV}"
-ENV PATH="${VIRTUAL_ENV}/bin:${MINIMAL_PATH}"
+ENV VIRTUAL_ENV=/opt/python-venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 COPY requirements.txt /tmp
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
@@ -40,23 +37,22 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 # Bootstrapping image with Vendor gcc toolchain
 #
 FROM conan-base AS conan-bootstrap
-RUN yum install --enablerepo crb -y \
+RUN apt-get install --no-install-recommends -y \
     make \
     cmake \
     binutils \
     gcc \
-    gcc-c++ \
-    libstdc++-static
+    g++
 
 
 ######################################################################
 # Build image with our own gcc toolchain
 #
 FROM conan-base AS conan-build
-ARG PKG_PREFIX="opt-toolchain-"
+ARG PKG_PREFIX="opt+toolchain-"
 ARG TOOLCHAIN_PREFIX="/opt/toolchain"
 
-RUN yum install -y \
+RUN apt-get install --no-install-recommends -y \
     ${PKG_PREFIX}make \
     ${PKG_PREFIX}cmake \
     ${PKG_PREFIX}binutils \
