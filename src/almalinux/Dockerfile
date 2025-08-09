@@ -69,6 +69,9 @@ RUN yum install --enablerepo conan-toolchain -y \
 
 ENV PATH="${VIRTUAL_ENV}/bin:${TOOLCHAIN_PREFIX}/bin:${MINIMAL_PATH}"
 
+######################################################################
+# Docker Toolchain Image Developer with Docker, GH Client, gh-act extension
+#
 FROM conan-build AS conan-docker-build
 
 # Configure Docker CE repo
@@ -82,3 +85,7 @@ RUN yum install --enablerepo crb -y \
     docker-ce \
     gh \
     ;
+
+# Need `GH_TOKEN` passed in as a secret to install gh-act
+RUN --mount=type=secret,id=gh_token,env=GH_TOKEN \
+    gh extension install nektos/gh-act

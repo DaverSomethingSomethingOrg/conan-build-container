@@ -26,39 +26,32 @@ PKG_PREFIX="opt-toolchain-"
 #         --no-cache \
 docker build \
          --target conan-base \
-         --platform ${docker_platform} \
          --tag "nexus.homelab/conan-base-almalinux:${machine_arch}-latest" \
          src/almalinux \
 && docker push \
-            --platform ${docker_platform} \
             "nexus.homelab/conan-base-almalinux:${machine_arch}-latest" \
 && docker build \
             --target conan-bootstrap \
-            --platform ${docker_platform} \
             --tag "nexus.homelab/conan-bootstrap-almalinux:${machine_arch}-latest" \
             src/almalinux \
 && docker push \
-            --platform ${docker_platform} \
             "nexus.homelab/conan-bootstrap-almalinux:${machine_arch}-latest" \
 && docker build \
             --target conan-build \
             --build-arg PKG_PREFIX="${PKG_PREFIX}" \
             --build-arg TOOLCHAIN_PREFIX="${TOOLCHAIN_PREFIX}" \
-            --platform ${docker_platform} \
             --tag "nexus.homelab/conan-build-almalinux:${machine_arch}-latest" \
             src/almalinux \
 && docker push \
-            --platform ${docker_platform} \
             "nexus.homelab/conan-build-almalinux:${machine_arch}-latest" \
 && docker build \
             --target conan-docker-build \
             --build-arg PKG_PREFIX="${PKG_PREFIX}" \
             --build-arg TOOLCHAIN_PREFIX="${TOOLCHAIN_PREFIX}" \
-            --platform ${docker_platform} \
+            --secret id=gh_token,env=GH_TOKEN \
             --tag "nexus.homelab/conan-docker-build-almalinux:${machine_arch}-latest" \
             src/almalinux \
 && docker push \
-            --platform ${docker_platform} \
             "nexus.homelab/conan-docker-build-almalinux:${machine_arch}-latest" \
 
 exit
