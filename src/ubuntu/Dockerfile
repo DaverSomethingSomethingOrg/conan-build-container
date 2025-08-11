@@ -5,6 +5,7 @@ RUN apt-get update -y
 RUN apt-get install --no-install-recommends -y \
     ca-certificates \
     git \
+    git-lfs \
     sudo \
     wget \
     vim \
@@ -44,6 +45,10 @@ RUN apt-get install --no-install-recommends -y \
     gcc \
     g++
 
+# Now that we have a build-worthy environment, detect conan default profile
+# - Do it here to save more time starting the build!
+RUN conan profile detect
+
 
 ######################################################################
 # Build image with our own gcc toolchain
@@ -59,3 +64,28 @@ RUN apt-get install --no-install-recommends -y \
     ${PKG_PREFIX}gcc
 
 ENV PATH="${VIRTUAL_ENV}/bin:${TOOLCHAIN_PREFIX}/bin:${MINIMAL_PATH}"
+
+# Now that we have a build-worthy environment, detect conan default profile
+# - Do it here to save more time starting the build!
+RUN conan profile detect
+
+######################################################################
+# Docker Toolchain Image Developer with Docker, GH Client, gh-act extension
+#
+#FROM conan-build AS conan-docker-build
+#
+## Configure Docker CE repo
+#RUN dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+#
+## Configure the GitHub repo for the gh client
+#RUN dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
+#
+## VS Code requires git so we do that in Dockerfile before we get here
+#RUN yum install -y \
+#    docker-ce \
+#    gh \
+#    ;
+#
+## Need `GH_TOKEN` passed in as a secret to install gh-act
+#RUN --mount=type=secret,id=gh_token,env=GH_TOKEN \
+#    gh extension install nektos/gh-act

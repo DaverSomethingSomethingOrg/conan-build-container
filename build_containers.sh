@@ -1,6 +1,50 @@
 #!/bin/bash
 #!/usr/bin/bash
 
+#set -x
+
+toolchain_prefix="/opt/toolchain"
+build_almalinux=false
+build_ubuntu=false
+#build_build=false
+#use_cache=false
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        "--toolchain_prefix")
+            shift # Consume this option argument
+            toolchain_prefix="$1"
+            shift # Consume this option value
+            ;;
+        "--build_almalinux")
+            build_almalinux=true
+            shift # Consume this option argument
+            ;;
+        "--build_ubuntu")
+            build_ubuntu=true
+            shift # Consume this option argument
+            ;;
+#        "--build_build")
+#            build_build=true
+#            shift # Consume this option argument
+#            ;;
+#        "--use_cache")
+#            use_cache=true
+#            shift # Consume this option argument
+#            ;;
+        *)
+            # Handle other arguments or break the loop
+            break
+            ;;
+    esac
+done
+
+echo "toolchain_prefix=${toolchain_prefix}"
+echo "build_almalinux=${build_almalinux}"
+echo "build_ubuntu=${build_ubuntu}"
+#echo "build_build=${build_build}"
+#echo "use_cache=${use_cache}"
+
 machine_arch=$(uname -m)
 case "${machine_arch}" in
     aarch64|arm64)
@@ -16,81 +60,98 @@ case "${machine_arch}" in
         ;;
 esac
 
-cp src/requirements.txt src/almalinux
-mkdir -p src/almalinux/config/etc/pki/ca-trust/source/anchors
-cp src/DaverSomethingSomethingRootCA.crt src/almalinux/config/etc/pki/ca-trust/source/anchors
+#CACHE_USAGE="--no-cache"
+#if [ "${use_cache}" = true ]; then
+#    CACHE_USAGE=""
+#fi
 
-TOOLCHAIN_PREFIX="/opt/toolchain"
-PKG_PREFIX="opt-toolchain-"
+set -x
+os_name="almalinux"
+build_varname="build_${os_name}"
+if [ "${!build_varname}" = true ]; then
 
-#         --no-cache \
-docker build \
+    PKG_PREFIX="opt-toolchain-"
+
+    cp src/requirements.txt "src/${os_name}"
+    mkdir -p "src/${os_name}/config/etc/pki/ca-trust/source/anchors"
+    cp "src/DaverSomethingSomethingRootCA.crt" "src/${os_name}/config/etc/pki/ca-trust/source/anchors"
+
+    docker pull "${os_name}:latest"
+
+    docker build \
          --target conan-base \
-         --tag "nexus.homelab/conan-base-almalinux:${machine_arch}-latest" \
-         src/almalinux \
-&& docker push \
-            "nexus.homelab/conan-base-almalinux:${machine_arch}-latest" \
-&& docker build \
+         --tag "nexus.homelab/conan-base-${os_name}:${machine_arch}-latest" \
+         "src/${os_name}" \
+    && docker push \
+            "nexus.homelab/conan-base-${os_name}:${machine_arch}-latest" \
+    && docker build \
             --target conan-bootstrap \
-            --tag "nexus.homelab/conan-bootstrap-almalinux:${machine_arch}-latest" \
-            src/almalinux \
-&& docker push \
-            "nexus.homelab/conan-bootstrap-almalinux:${machine_arch}-latest" \
-&& docker build \
+            --tag "nexus.homelab/conan-bootstrap-${os_name}:${machine_arch}-latest" \
+            "src/${os_name}" \
+    && docker push \
+            "nexus.homelab/conan-bootstrap-${os_name}:${machine_arch}-latest" \
+    && docker build \
             --target conan-build \
             --build-arg PKG_PREFIX="${PKG_PREFIX}" \
-            --build-arg TOOLCHAIN_PREFIX="${TOOLCHAIN_PREFIX}" \
-            --tag "nexus.homelab/conan-build-almalinux:${machine_arch}-latest" \
-            src/almalinux \
-&& docker push \
-            "nexus.homelab/conan-build-almalinux:${machine_arch}-latest" \
-&& docker build \
+            --build-arg TOOLCHAIN_PREFIX="${toolchain_prefix}" \
+            --tag "nexus.homelab/conan-build-${os_name}:${machine_arch}-latest" \
+            "src/${os_name}" \
+    && docker push \
+            "nexus.homelab/conan-build-${os_name}:${machine_arch}-latest" \
+    && docker build \
             --target conan-docker-build \
             --build-arg PKG_PREFIX="${PKG_PREFIX}" \
-            --build-arg TOOLCHAIN_PREFIX="${TOOLCHAIN_PREFIX}" \
+            --build-arg TOOLCHAIN_PREFIX="${toolchain_prefix}" \
             --secret id=gh_token,env=GH_TOKEN \
-            --tag "nexus.homelab/conan-docker-build-almalinux:${machine_arch}-latest" \
-            src/almalinux \
-&& docker push \
-            "nexus.homelab/conan-docker-build-almalinux:${machine_arch}-latest" \
+            --tag "nexus.homelab/conan-docker-build-${os_name}:${machine_arch}-latest" \
+            "src/${os_name}" \
+    && docker push \
+            "nexus.homelab/conan-docker-build-${os_name}:${machine_arch}-latest" \
 
-exit
+fi
 
-PKG_PREFIX="opt+toolchain-"
+os_name="ubuntu"
+build_varname="build_${os_name}"
+if [ "${!build_varname}" = true ]; then
 
-cp src/requirements.txt src/ubuntu
-mkdir -p src/ubuntu/config/etc/pki/ca-trust/source/anchors
-cp src/DaverSomethingSomethingRootCA.crt src/ubuntu/config/etc/pki/ca-trust/source/anchors
+    PKG_PREFIX="opt+toolchain-"
 
-#            --no-cache \
-docker build \
-            --file src/Dockerfile-ubuntu \
-            --target conan-base \
-            --platform ${docker_platform} \
-            --tag "nexus.homelab/conan-base-ubuntu:${machine_arch}-latest" \
-            src \
-&& docker push \
-            --platform ${docker_platform} \
-            "nexus.homelab/conan-base-ubuntu:${machine_arch}-latest" \
-&& docker build \
-            --file src/Dockerfile-ubuntu \
-            --target conan-bootstrap \
-            --platform ${docker_platform} \
-            --tag "nexus.homelab/conan-bootstrap-ubuntu:${machine_arch}-latest" \
-            src \
-&& docker push \
-            --platform ${docker_platform} \
-            "nexus.homelab/conan-bootstrap-ubuntu:${machine_arch}-latest" \
+    cp src/requirements.txt "src/${os_name}"
+    mkdir -p "src/${os_name}/config/etc/pki/ca-trust/source/anchors"
+    cp "src/DaverSomethingSomethingRootCA.crt" "src/${os_name}/config/etc/pki/ca-trust/source/anchors"
 
-#&& docker build \
-#            --file src/Dockerfile-ubuntu \
-#            --target conan-build \
+    docker pull "${os_name}:latest"
+
+    docker build \
+        --target conan-base \
+        --tag "nexus.homelab/conan-base-${os_name}:${machine_arch}-latest" \
+        "src/${os_name}" \
+    && docker push \
+        "nexus.homelab/conan-base-${os_name}:${machine_arch}-latest" \
+    && docker build \
+        --target conan-bootstrap \
+        --tag "nexus.homelab/conan-bootstrap-${os_name}:${machine_arch}-latest" \
+        "src/${os_name}" \
+    && docker push \
+        "nexus.homelab/conan-bootstrap-${os_name}:${machine_arch}-latest" \
+
+#    && docker build \
+#        --target conan-build \
+#        --build-arg PKG_PREFIX="${PKG_PREFIX}" \
+#        --build-arg TOOLCHAIN_PREFIX="${toolchain_prefix}" \
+#        --tag "nexus.homelab/conan-build-${os_name}:${machine_arch}-latest" \
+#        "src/${os_name}" \
+#    && docker push \
+#        "nexus.homelab/conan-build-${os_name}:${machine_arch}-latest" \
+
+#    && docker build \
+#            --target conan-docker-build \
 #            --build-arg PKG_PREFIX="${PKG_PREFIX}" \
-#            --build-arg TOOLCHAIN_PREFIX="${TOOLCHAIN_PREFIX}" \
-#            --platform ${docker_platform} \
-#            --tag "nexus.homelab/conan-build-ubuntu:${machine_arch}-latest" \
-#            src \
-#&& docker push \
-#            --platform ${docker_platform} \
-#            "nexus.homelab/conan-build-ubuntu:${machine_arch}-latest" \
+#            --build-arg TOOLCHAIN_PREFIX="${toolchain_prefix}" \
+#            --secret id=gh_token,env=GH_TOKEN \
+#            --tag "nexus.homelab/conan-docker-build-${os_name}:${machine_arch}-latest" \
+#            "src/${os_name}" \
+#    && docker push \
+#            "nexus.homelab/conan-docker-build-${os_name}:${machine_arch}-latest" \
 
+fi

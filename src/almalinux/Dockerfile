@@ -1,10 +1,13 @@
 FROM almalinux:latest AS conan-base
 
-RUN dnf install -y 'dnf-command(config-manager)'
-RUN yum install --enablerepo crb -y \
+RUN dnf install -y 'dnf-command(config-manager)' yum-utils
+RUN yum-config-manager --enable crb
+
+RUN yum install -y \
     ca-certificates \
     procps-ng \
     git \
+    git-lfs \
     sudo \
     tree \
     python3 \
@@ -45,7 +48,7 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 # Bootstrapping image with Vendor gcc toolchain
 #
 FROM conan-base AS conan-bootstrap
-RUN yum install --enablerepo crb -y \
+RUN yum install -y \
     make \
     cmake \
     binutils \
@@ -53,6 +56,9 @@ RUN yum install --enablerepo crb -y \
     gcc-c++ \
     libstdc++-static
 
+# Now that we have a build-worthy environment, detect conan default profile
+# - Do it here to save more time starting the build!
+RUN conan profile detect
 
 ######################################################################
 # Build image with our own gcc toolchain
@@ -69,6 +75,10 @@ RUN yum install --enablerepo conan-toolchain -y \
 
 ENV PATH="${VIRTUAL_ENV}/bin:${TOOLCHAIN_PREFIX}/bin:${MINIMAL_PATH}"
 
+# Now that we have a build-worthy environment, detect conan default profile
+# - Do it here to save more time starting the build!
+RUN conan profile detect
+
 ######################################################################
 # Docker Toolchain Image Developer with Docker, GH Client, gh-act extension
 #
@@ -81,7 +91,7 @@ RUN dnf config-manager --add-repo https://download.docker.com/linux/centos/docke
 RUN dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
 
 # VS Code requires git so we do that in Dockerfile before we get here
-RUN yum install --enablerepo crb -y \
+RUN yum install -y \
     docker-ce \
     gh \
     ;
