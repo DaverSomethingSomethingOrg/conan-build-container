@@ -6,7 +6,7 @@
 toolchain_prefix="/opt/toolchain"
 build_almalinux=false
 build_ubuntu=false
-#build_build=false
+build_build=false
 #use_cache=false
 
 while [[ $# -gt 0 ]]; do
@@ -24,10 +24,10 @@ while [[ $# -gt 0 ]]; do
             build_ubuntu=true
             shift # Consume this option argument
             ;;
-#        "--build_build")
-#            build_build=true
-#            shift # Consume this option argument
-#            ;;
+        "--build_build")
+            build_build=true
+            shift # Consume this option argument
+            ;;
 #        "--use_cache")
 #            use_cache=true
 #            shift # Consume this option argument
@@ -42,8 +42,11 @@ done
 echo "toolchain_prefix=${toolchain_prefix}"
 echo "build_almalinux=${build_almalinux}"
 echo "build_ubuntu=${build_ubuntu}"
-#echo "build_build=${build_build}"
+echo "build_build=${build_build}"
 #echo "use_cache=${use_cache}"
+
+PKG_PREFIX_almalinux="opt-toolchain-"
+PKG_PREFIX_ubuntu="opt+toolchain-"
 
 machine_arch=$(uname -m)
 case "${machine_arch}" in
@@ -66,92 +69,79 @@ esac
 #fi
 
 set -x
-os_name="almalinux"
-build_varname="build_${os_name}"
-if [ "${!build_varname}" = true ]; then
 
-    PKG_PREFIX="opt-toolchain-"
+# OS specific stuff
+# almalinux
+cp "src/DaverSomethingSomethingRootCA.crt" "src/almalinux/config/etc/pki/ca-trust/source/anchors"
+    
+# ubuntu
+cp "src/DaverSomethingSomethingRootCA.crt" "src/ubuntu/config/usr/local/share/ca-certificates"
+cp "src/conan-toolchain-keyring.gpg" "src/ubuntu/config/etc/apt/trusted.gpg.d"
+
+for os_name in 'almalinux' 'ubuntu'; do
+
+    ######################################################################
+    # Only build the requested OS images using --build_<osname> arguments
+    #
+    build_varname="build_${os_name}"
+    if [ "${!build_varname}" = false ]; then
+        continue
+    fi
+
+    pkg_prefix_varname="PKG_PREFIX_${os_name}"
+    PKG_PREFIX="${!pkg_prefix_varname}"
 
     cp src/requirements.txt "src/${os_name}"
     mkdir -p "src/${os_name}/config/etc/pki/ca-trust/source/anchors"
-    cp "src/DaverSomethingSomethingRootCA.crt" "src/${os_name}/config/etc/pki/ca-trust/source/anchors"
 
+    set -e
     docker pull "${os_name}:latest"
 
     docker build \
          --target conan-base \
          --tag "nexus.homelab/conan-base-${os_name}:${machine_arch}-latest" \
-         "src/${os_name}" \
-    && docker push \
-            "nexus.homelab/conan-base-${os_name}:${machine_arch}-latest" \
-    && docker build \
-            --target conan-bootstrap \
-            --tag "nexus.homelab/conan-bootstrap-${os_name}:${machine_arch}-latest" \
-            "src/${os_name}" \
-    && docker push \
-            "nexus.homelab/conan-bootstrap-${os_name}:${machine_arch}-latest" \
-    && docker build \
-            --target conan-build \
-            --build-arg PKG_PREFIX="${PKG_PREFIX}" \
-            --build-arg TOOLCHAIN_PREFIX="${toolchain_prefix}" \
-            --tag "nexus.homelab/conan-build-${os_name}:${machine_arch}-latest" \
-            "src/${os_name}" \
-    && docker push \
-            "nexus.homelab/conan-build-${os_name}:${machine_arch}-latest" \
-    && docker build \
-            --target conan-docker-build \
-            --build-arg PKG_PREFIX="${PKG_PREFIX}" \
-            --build-arg TOOLCHAIN_PREFIX="${toolchain_prefix}" \
-            --secret id=gh_token,env=GH_TOKEN \
-            --tag "nexus.homelab/conan-docker-build-${os_name}:${machine_arch}-latest" \
-            "src/${os_name}" \
-    && docker push \
-            "nexus.homelab/conan-docker-build-${os_name}:${machine_arch}-latest" \
+         "src/${os_name}"
 
-fi
-
-os_name="ubuntu"
-build_varname="build_${os_name}"
-if [ "${!build_varname}" = true ]; then
-
-    PKG_PREFIX="opt+toolchain-"
-
-    cp src/requirements.txt "src/${os_name}"
-    mkdir -p "src/${os_name}/config/etc/pki/ca-trust/source/anchors"
-    cp "src/DaverSomethingSomethingRootCA.crt" "src/${os_name}/config/etc/pki/ca-trust/source/anchors"
-
-    docker pull "${os_name}:latest"
+    docker push \
+            "nexus.homelab/conan-base-${os_name}:${machine_arch}-latest"
 
     docker build \
-        --target conan-base \
-        --tag "nexus.homelab/conan-base-${os_name}:${machine_arch}-latest" \
-        "src/${os_name}" \
-    && docker push \
-        "nexus.homelab/conan-base-${os_name}:${machine_arch}-latest" \
-    && docker build \
-        --target conan-bootstrap \
-        --tag "nexus.homelab/conan-bootstrap-${os_name}:${machine_arch}-latest" \
-        "src/${os_name}" \
-    && docker push \
-        "nexus.homelab/conan-bootstrap-${os_name}:${machine_arch}-latest" \
+            --target conan-bootstrap \
+            --tag "nexus.homelab/conan-bootstrap-${os_name}:${machine_arch}-latest" \
+            "src/${os_name}"
 
-#    && docker build \
-#        --target conan-build \
-#        --build-arg PKG_PREFIX="${PKG_PREFIX}" \
-#        --build-arg TOOLCHAIN_PREFIX="${toolchain_prefix}" \
-#        --tag "nexus.homelab/conan-build-${os_name}:${machine_arch}-latest" \
-#        "src/${os_name}" \
-#    && docker push \
-#        "nexus.homelab/conan-build-${os_name}:${machine_arch}-latest" \
+    docker push \
+            "nexus.homelab/conan-bootstrap-${os_name}:${machine_arch}-latest"
 
-#    && docker build \
-#            --target conan-docker-build \
-#            --build-arg PKG_PREFIX="${PKG_PREFIX}" \
-#            --build-arg TOOLCHAIN_PREFIX="${toolchain_prefix}" \
-#            --secret id=gh_token,env=GH_TOKEN \
-#            --tag "nexus.homelab/conan-docker-build-${os_name}:${machine_arch}-latest" \
-#            "src/${os_name}" \
-#    && docker push \
-#            "nexus.homelab/conan-docker-build-${os_name}:${machine_arch}-latest" \
+    ######################################################################
+    # Build and build-derived images below.
+    # Enable with --build_build
+    #
+    if [ "${build_build}" = false ]; then
+        continue
+    fi
 
-fi
+    docker build \
+        --target conan-build \
+        --build-arg PKG_PREFIX="${PKG_PREFIX}" \
+        --build-arg TOOLCHAIN_PREFIX="${toolchain_prefix}" \
+        --tag "nexus.homelab/conan-build-${os_name}:${machine_arch}-latest" \
+        "src/${os_name}"
+
+    docker push \
+        "nexus.homelab/conan-build-${os_name}:${machine_arch}-latest"
+    
+    docker build \
+        --target conan-docker-build \
+        --build-arg PKG_PREFIX="${PKG_PREFIX}" \
+        --build-arg TOOLCHAIN_PREFIX="${toolchain_prefix}" \
+        --secret id=gh_token,env=GH_TOKEN \
+        --tag "nexus.homelab/conan-docker-build-${os_name}:${machine_arch}-latest" \
+        "src/${os_name}"
+
+    docker push \
+        "nexus.homelab/conan-docker-build-${os_name}:${machine_arch}-latest"
+
+    set +e
+
+done

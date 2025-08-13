@@ -1,10 +1,15 @@
 FROM almalinux:latest AS conan-base
 
+# Copy over any needed source files or configuration
+COPY config /
+
 RUN dnf install -y 'dnf-command(config-manager)' yum-utils
 RUN yum-config-manager --enable crb
 
 RUN yum install -y \
     ca-certificates \
+    gnupg2 \
+    openssh \
     procps-ng \
     git \
     git-lfs \
@@ -29,7 +34,6 @@ RUN yum install -y \
     glibc-headers
 
 # Setup Certs and toolchain Yum repo(s)
-COPY config /
 RUN update-ca-trust
 
 ENV MINIMAL_PATH="${PATH}"

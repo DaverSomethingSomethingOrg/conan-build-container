@@ -8,3 +8,4 @@ markdown-callouts
 mkdocstrings[python]
 mike
 distro2sbom
+cyclonedx-py
