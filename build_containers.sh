@@ -3,6 +3,27 @@
 
 #set -x
 
+Usage(){
+   cat <<EOF
+Usage: $0 [options]
+
+--toolchain_prefix  Toplevel directory to install toolchain into.
+                    Default: /opt/toolchain
+
+--build_almalinux   Build images for the 'AlmaLinux' OS.
+                    Default: false/disabled
+
+--build_ubuntu      Build images for the 'Ubuntu' OS.
+                    Default: false/disabled
+
+--build_build       Also build our Demo GCC Toolchain images.
+                    Default: false/disabled
+
+--help              print this help text
+
+EOF
+}
+
 toolchain_prefix="/opt/toolchain"
 build_almalinux=false
 build_ubuntu=false
@@ -32,13 +53,19 @@ while [[ $# -gt 0 ]]; do
 #            use_cache=true
 #            shift # Consume this option argument
 #            ;;
+        "--help")
+            Usage
+            exit 0
+            ;;
         *)
             # Handle other arguments or break the loop
-            break
+            Usage
+            exit 1
             ;;
     esac
 done
 
+echo
 echo "toolchain_prefix=${toolchain_prefix}"
 echo "build_almalinux=${build_almalinux}"
 echo "build_ubuntu=${build_ubuntu}"
@@ -73,7 +100,7 @@ set -x
 # OS specific stuff
 # almalinux
 cp "src/DaverSomethingSomethingRootCA.crt" "src/almalinux/config/etc/pki/ca-trust/source/anchors"
-    
+
 # ubuntu
 cp "src/DaverSomethingSomethingRootCA.crt" "src/ubuntu/config/usr/local/share/ca-certificates"
 cp "src/conan-toolchain-keyring.gpg" "src/ubuntu/config/etc/apt/trusted.gpg.d"
