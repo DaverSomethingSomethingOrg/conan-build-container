@@ -113,7 +113,7 @@ jobs:
           build-args: |
             PKG_PREFIX=${{ inputs.package_prefix }}
             TOOLCHAIN_PREFIX=${{ inputs.toolchain_prefix }}
-          secret-env: |
+          secret-envs: |
             gh_token=GH_TOKEN
 
 #    docker push \

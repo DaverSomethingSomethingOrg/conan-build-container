@@ -1,5 +1,5 @@
 Types: deb
 URIs: https://nexus.homelab/repository/apt-homelab
-Suites: daverhasahobby@gmail.com
+Suites: noble
 Components: main
 Signed-By: /etc/apt/trusted.gpg.d/conan-toolchain-keyring.gpg

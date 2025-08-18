@@ -136,8 +136,11 @@ jobs:
       package_prefix: ${{ matrix.package_prefix }}
       container_registry: ${{ vars.NEXUS_REGISTRY }}
       container_username: ${{ vars.NEXUS_CI_USER }}
+      python_requirements: "src/requirements.txt"
     secrets:
       container_password: ${{ secrets.NEXUS_CI_PASSWORD }}
+      install_keyring: ${{ secrets.NEXUS_APT_KEYRING }}
+      install_ca: ${{ secrets.NEXUS_INTERNAL_CA }}
 
   conan-build:
     name: conan-build-${{ matrix.os_name }}:${{ matrix.arch }}-latest
@@ -185,8 +188,11 @@ jobs:
       package_prefix: ${{ matrix.package_prefix }}
       container_registry: ${{ vars.NEXUS_REGISTRY }}
       container_username: ${{ vars.NEXUS_CI_USER }}
+      python_requirements: "src/requirements.txt"
     secrets:
       container_password: ${{ secrets.NEXUS_CI_PASSWORD }}
+      install_keyring: ${{ secrets.NEXUS_APT_KEYRING }}
+      install_ca: ${{ secrets.NEXUS_INTERNAL_CA }}
  
   conan-docker-build:
     name: conan-docker-build-${{ matrix.os_name }}:${{ matrix.arch }}-latest
@@ -234,6 +240,9 @@ jobs:
       package_prefix: ${{ matrix.package_prefix }}
       container_registry: ${{ vars.NEXUS_REGISTRY }}
       container_username: ${{ vars.NEXUS_CI_USER }}
+      python_requirements: "src/requirements.txt"
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       container_password: ${{ secrets.NEXUS_CI_PASSWORD }}
+      install_keyring: ${{ secrets.NEXUS_APT_KEYRING }}
+      install_ca: ${{ secrets.NEXUS_INTERNAL_CA }}
