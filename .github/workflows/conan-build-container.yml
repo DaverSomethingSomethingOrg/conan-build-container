@@ -232,5 +232,5 @@ jobs:
       container_registry: ${{ vars.NEXUS_REGISTRY }}
       container_username: ${{ vars.NEXUS_CI_USER }}
     secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       container_password: ${{ secrets.NEXUS_CI_PASSWORD }}

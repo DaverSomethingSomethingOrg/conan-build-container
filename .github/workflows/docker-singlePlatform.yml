@@ -46,7 +46,7 @@ on:
         type: string
         required: false
     secrets:
-      GITHUB_TOKEN:
+      GH_TOKEN:
         required: false
       container_password:
         required: false
@@ -63,7 +63,7 @@ jobs:
 #      image: ${{ inputs.container_image }}
 #      credentials:
 #        username: ${{ github.actor }}
-#        password: ${{ secrets.GITHUB_TOKEN }}
+#        password: ${{ secrets.GH_TOKEN }}
 
     steps:
       - name: Checkout Source
@@ -102,7 +102,7 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v6
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           push: false
           tags: ${{ inputs.image_tag }}
@@ -115,18 +115,6 @@ jobs:
             TOOLCHAIN_PREFIX=${{ inputs.toolchain_prefix }}
           secret-env: |
             gh_token=GH_TOKEN
-
-
-#          secrets: |
-#            gh_token=GH_TOKEN
-#    secrets: |
-#      GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
-#            GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
-#          secret-env: |
-#            GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
-#        --secret id=gh_token,env=GH_TOKEN \
-          # secret-files: |
-
 
 #    docker push \
 #        "nexus.homelab/conan-build-${os_name}:${machine_arch}-latest"
