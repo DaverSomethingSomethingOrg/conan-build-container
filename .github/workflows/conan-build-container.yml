@@ -27,21 +27,12 @@ on:
       container_push:
         type: boolean
         default: false
-      toolchain_prefix:
-        type: string
-        default: '/opt/toolchain'
       runner_selection-aarch64:
         type: string
         default: linux-aarch64
       runner_selection-x86_64:
         type: string
         default: linux-x86_64
-      package_prefix-almalinux:
-        type: string
-        default: 'opt-toolchain-'
-      package_prefix-ubuntu:
-        type: string
-        default: 'opt+toolchain-'
   workflow_dispatch:
     inputs:
       enable_build_images:
@@ -62,21 +53,17 @@ on:
       container_push:
         type: boolean
         default: false
-      toolchain_prefix:
-        type: string
-        default: '/opt/toolchain'
       runner_selection-aarch64:
         type: string
         default: linux-aarch64
       runner_selection-x86_64:
         type: string
         default: linux-x86_64
-      package_prefix-almalinux:
-        type: string
-        default: 'opt-toolchain-'
-      package_prefix-ubuntu:
-        type: string
-        default: 'opt+toolchain-'
+
+env:
+  toolchain_prefix: '/opt/toolchain'
+  package_prefix-almalinux: 'opt-toolchain-'
+  package_prefix-ubuntu: 'opt+toolchain-'
 
 jobs:
   conan-base:
@@ -90,27 +77,27 @@ jobs:
             is_enabled: ${{ inputs.almalinux-aarch64-enabled }}
             runner_selection: ${{ inputs.runner_selection-aarch64 }}
             docker_context: "src/almalinux"
-            package_prefix: ${{ inputs.package_prefix-almalinux }}
+            package_prefix: ${{ env.package_prefix-almalinux }}
           - image_tag: "nexus.homelab/conan-base-almalinux:x86_64-latest"
             is_enabled: ${{ inputs.almalinux-x86_64-enabled }}
             runner_selection: ${{ inputs.runner_selection-x86_64 }}
             docker_context: "src/almalinux"
-            package_prefix: ${{ inputs.package_prefix-almalinux }}
+            package_prefix: ${{ env.package_prefix-almalinux }}
           - image_tag: "nexus.homelab/conan-base-ubuntu:aarch64-latest"
             is_enabled: ${{ inputs.ubuntu-aarch64-enabled }}
             runner_selection: ${{ inputs.runner_selection-aarch64 }}
             docker_context: "src/ubuntu"
-            package_prefix: ${{ inputs.package_prefix-ubuntu }}
+            package_prefix: ${{ env.package_prefix-ubuntu }}
           - image_tag: "nexus.homelab/conan-base-ubuntu:x86_64-latest"
             is_enabled: ${{ inputs.ubuntu-x86_64-enabled }}
             runner_selection: ${{ inputs.runner_selection-x86_64 }}
             docker_context: "src/ubuntu"
-            package_prefix: ${{ inputs.package_prefix-ubuntu }}
+            package_prefix: ${{ env.package_prefix-ubuntu }}
     uses: DaverSomethingSomethingOrg/conan-github-workflows/.github/workflows/docker-singlePlatform.yml@main
     with:
       is_enabled: ${{ matrix.is_enabled }}
       runner_selection: ${{ matrix.runner_selection }}
-      toolchain_prefix: ${{ inputs.toolchain_prefix }}
+      toolchain_prefix: ${{ env.toolchain_prefix }}
       build_target: 'conan-base'
       image_tag: ${{ matrix.image_tag }}
       docker_context: ${{ matrix.docker_context }}
@@ -136,27 +123,27 @@ jobs:
             is_enabled: ${{ inputs.almalinux-aarch64-enabled }}
             runner_selection: ${{ inputs.runner_selection-aarch64 }}
             docker_context: "src/almalinux"
-            package_prefix: ${{ inputs.package_prefix-almalinux }}
+            package_prefix: ${{ env.package_prefix-almalinux }}
           - image_tag: "nexus.homelab/conan-bootstrap-almalinux:x86_64-latest"
             is_enabled: ${{ inputs.almalinux-x86_64-enabled }}
             runner_selection: ${{ inputs.runner_selection-x86_64 }}
             docker_context: "src/almalinux"
-            package_prefix: ${{ inputs.package_prefix-almalinux }}
+            package_prefix: ${{ env.package_prefix-almalinux }}
           - image_tag: "nexus.homelab/conan-bootstrap-ubuntu:aarch64-latest"
             is_enabled: ${{ inputs.ubuntu-aarch64-enabled }}
             runner_selection: ${{ inputs.runner_selection-aarch64 }}
             docker_context: "src/ubuntu"
-            package_prefix: ${{ inputs.package_prefix-ubuntu }}
+            package_prefix: ${{ env.package_prefix-ubuntu }}
           - image_tag: "nexus.homelab/conan-bootstrap-ubuntu:x86_64-latest"
             is_enabled: ${{ inputs.ubuntu-x86_64-enabled }}
             runner_selection: ${{ inputs.runner_selection-x86_64 }}
             docker_context: "src/ubuntu"
-            package_prefix: ${{ inputs.package_prefix-ubuntu }}
+            package_prefix: ${{ env.package_prefix-ubuntu }}
     uses: DaverSomethingSomethingOrg/conan-github-workflows/.github/workflows/docker-singlePlatform.yml@main
     with:
       is_enabled: ${{ matrix.is_enabled }}
       runner_selection: ${{ matrix.runner_selection }}
-      toolchain_prefix: ${{ inputs.toolchain_prefix }}
+      toolchain_prefix: ${{ env.toolchain_prefix }}
       build_target: 'conan-bootstrap'
       image_tag: ${{ matrix.image_tag }}
       docker_context: ${{ matrix.docker_context }}
@@ -183,27 +170,27 @@ jobs:
             is_enabled: ${{ inputs.almalinux-aarch64-enabled }}
             runner_selection: ${{ inputs.runner_selection-aarch64 }}
             docker_context: "src/almalinux"
-            package_prefix: ${{ inputs.package_prefix-almalinux }}
+            package_prefix: ${{ env.package_prefix-almalinux }}
           - image_tag: "nexus.homelab/conan-build-almalinux:x86_64-latest"
             is_enabled: ${{ inputs.almalinux-x86_64-enabled }}
             runner_selection: ${{ inputs.runner_selection-x86_64 }}
             docker_context: "src/almalinux"
-            package_prefix: ${{ inputs.package_prefix-almalinux }}
+            package_prefix: ${{ env.package_prefix-almalinux }}
           - image_tag: "nexus.homelab/conan-build-ubuntu:aarch64-latest"
             is_enabled: ${{ inputs.ubuntu-aarch64-enabled }}
             runner_selection: ${{ inputs.runner_selection-aarch64 }}
             docker_context: "src/ubuntu"
-            package_prefix: ${{ inputs.package_prefix-ubuntu }}
+            package_prefix: ${{ env.package_prefix-ubuntu }}
           - image_tag: "nexus.homelab/conan-build-ubuntu:x86_64-latest"
             is_enabled: ${{ inputs.ubuntu-x86_64-enabled }}
             runner_selection: ${{ inputs.runner_selection-x86_64 }}
             docker_context: "src/ubuntu"
-            package_prefix: ${{ inputs.package_prefix-ubuntu }}
+            package_prefix: ${{ env.package_prefix-ubuntu }}
     uses: DaverSomethingSomethingOrg/conan-github-workflows/.github/workflows/docker-singlePlatform.yml@main
     with:
       is_enabled: ${{ matrix.is_enabled }}
       runner_selection: ${{ matrix.runner_selection }}
-      toolchain_prefix: ${{ inputs.toolchain_prefix }}
+      toolchain_prefix: ${{ env.toolchain_prefix }}
       build_target: 'conan-build'
       image_tag: ${{ matrix.image_tag }}
       docker_context: ${{ matrix.docker_context }}
@@ -230,27 +217,27 @@ jobs:
             is_enabled: ${{ inputs.almalinux-aarch64-enabled }}
             runner_selection: ${{ inputs.runner_selection-aarch64 }}
             docker_context: "src/almalinux"
-            package_prefix: ${{ inputs.package_prefix-almalinux }}
+            package_prefix: ${{ env.package_prefix-almalinux }}
           - image_tag: "nexus.homelab/conan-docker-build-almalinux:x86_64-latest"
             is_enabled: ${{ inputs.almalinux-x86_64-enabled }}
             runner_selection: ${{ inputs.runner_selection-x86_64 }}
             docker_context: "src/almalinux"
-            package_prefix: ${{ inputs.package_prefix-almalinux }}
+            package_prefix: ${{ env.package_prefix-almalinux }}
           - image_tag: "nexus.homelab/conan-docker-build-ubuntu:aarch64-latest"
             is_enabled: ${{ inputs.ubuntu-aarch64-enabled }}
             runner_selection: ${{ inputs.runner_selection-aarch64 }}
             docker_context: "src/ubuntu"
-            package_prefix: ${{ inputs.package_prefix-ubuntu }}
+            package_prefix: ${{ env.package_prefix-ubuntu }}
           - image_tag: "nexus.homelab/conan-docker-build-ubuntu:x86_64-latest"
             is_enabled: ${{ inputs.ubuntu-x86_64-enabled }}
             runner_selection: ${{ inputs.runner_selection-x86_64 }}
             docker_context: "src/ubuntu"
-            package_prefix: ${{ inputs.package_prefix-ubuntu }}
+            package_prefix: ${{ env.package_prefix-ubuntu }}
     uses: DaverSomethingSomethingOrg/conan-github-workflows/.github/workflows/docker-singlePlatform.yml@main
     with:
       is_enabled: ${{ matrix.is_enabled }}
       runner_selection: ${{ matrix.runner_selection }}
-      toolchain_prefix: ${{ inputs.toolchain_prefix }}
+      toolchain_prefix: ${{ env.toolchain_prefix }}
       build_target: 'conan-docker-build'
       image_tag: ${{ matrix.image_tag }}
       docker_context: ${{ matrix.docker_context }}
