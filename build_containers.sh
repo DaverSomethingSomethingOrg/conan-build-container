@@ -97,14 +97,6 @@ esac
 
 set -x
 
-# OS specific stuff
-# almalinux
-cp "src/DaverSomethingSomethingRootCA.crt" "src/almalinux/config/etc/pki/ca-trust/source/anchors"
-
-# ubuntu
-cp "src/DaverSomethingSomethingRootCA.crt" "src/ubuntu/config/usr/local/share/ca-certificates"
-cp "src/conan-toolchain-keyring.gpg" "src/ubuntu/config/etc/apt/trusted.gpg.d"
-
 for os_name in 'almalinux' 'ubuntu'; do
 
     ######################################################################
@@ -119,7 +111,6 @@ for os_name in 'almalinux' 'ubuntu'; do
     PKG_PREFIX="${!pkg_prefix_varname}"
 
     cp src/requirements.txt "src/${os_name}"
-    mkdir -p "src/${os_name}/config/etc/pki/ca-trust/source/anchors"
 
     set -e
     docker pull "${os_name}:latest"

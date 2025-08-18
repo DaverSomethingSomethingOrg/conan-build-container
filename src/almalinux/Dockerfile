@@ -34,7 +34,12 @@ RUN yum install -y \
     glibc-headers
 
 # Setup Certs and toolchain Yum repo(s)
-RUN update-ca-trust
+COPY keys/ /tmp/keys/
+RUN if [ -f "/tmp/keys/InternalCA.crt" ]; then \
+      mv /tmp/keys/InternalCA.crt /etc/pki/ca-trust/source/anchors/; \
+      update-ca-trust; \
+    fi; \
+    rm -fR /tmp/keys/;
 
 ENV MINIMAL_PATH="${PATH}"
 ENV CC=gcc
@@ -44,8 +49,12 @@ ENV CXX=g++
 ENV VIRTUAL_ENV="/opt/python-venv"
 RUN python3 -m venv "${VIRTUAL_ENV}"
 ENV PATH="${VIRTUAL_ENV}/bin:${MINIMAL_PATH}"
-COPY requirements.txt /tmp
-RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+COPY python-requirements.txt* /tmp
+RUN if [ -f "/tmp/python-requirements.txt" ]; then \
+      pip install --no-cache-dir -r /tmp/python-requirements.txt; \
+      rm /tmp/python-requirements.txt; \
+    fi;
 
 
 ######################################################################

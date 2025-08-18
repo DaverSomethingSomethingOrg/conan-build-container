@@ -4,8 +4,8 @@ FROM ubuntu:latest AS conan-base
 COPY config /
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update -y
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get update \
+ && apt-get install --no-install-recommends -y \
       ca-certificates \
       gnupg \
       ssh \
@@ -26,7 +26,16 @@ RUN apt-get install --no-install-recommends -y \
       fakeroot
 
 # Setup Certs and toolchain Apt repo(s)
-RUN update-ca-certificates
+COPY keys/ /tmp/keys/
+RUN if [ -f "/tmp/keys/InternalCA.crt" ]; then \
+      mv /tmp/keys/InternalCA.crt /usr/local/share/ca-certificates/; \
+      update-ca-certificates; \
+    fi; \
+    \
+    if [ -f "/tmp/keys/internal-keyring.gpg" ]; then \
+      mv /tmp/keys/internal-keyring.gpg /etc/apt/trusted.gpg.d; \
+    fi; \
+    rm -fR /tmp/keys/;
 
 ENV MINIMAL_PATH="${PATH}"
 ENV CC=gcc
@@ -36,17 +45,20 @@ ENV CXX=g++
 ENV VIRTUAL_ENV=/opt/python-venv
 RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-COPY requirements.txt /tmp
-RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
+COPY python-requirements.txt* /tmp
+RUN if [ -f "/tmp/python-requirements.txt" ]; then \
+      pip install --no-cache-dir -r /tmp/python-requirements.txt; \
+      rm /tmp/python-requirements.txt; \
+    fi;
 
 ######################################################################
 # Bootstrapping image with Vendor gcc toolchain
 #
 FROM conan-base AS conan-bootstrap
 
-RUN apt-get update -y
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get update \
+ && apt-get install --no-install-recommends -y \
       make \
       cmake \
       binutils \
@@ -65,8 +77,8 @@ FROM conan-base AS conan-build
 ARG PKG_PREFIX="opt+toolchain-"
 ARG TOOLCHAIN_PREFIX="/opt/toolchain"
 
-RUN apt-get update -y
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get update \
+ && apt-get install --no-install-recommends -y \
       ${PKG_PREFIX}make \
       ${PKG_PREFIX}cmake \
       ${PKG_PREFIX}binutils \
@@ -83,8 +95,8 @@ RUN conan profile detect
 #
 FROM conan-build AS conan-docker-build
 
-RUN apt-get update -y
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get update \
+ && apt-get install --no-install-recommends -y \
       docker-ce \
       docker-ce-cli \
       containerd.io \
