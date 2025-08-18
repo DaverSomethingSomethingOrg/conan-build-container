@@ -7,6 +7,41 @@
 name: Conan C/C++ toolchain build container
 
 on:
+  workflow_call:
+    inputs:
+      enable_build_images:
+        type: boolean
+        default: true
+      almalinux-aarch64-enabled:
+        type: boolean
+        default: false
+      almalinux-x86_64-enabled:
+        type: boolean
+        default: false
+      ubuntu-aarch64-enabled:
+        type: boolean
+        default: false
+      ubuntu-x86_64-enabled:
+        type: boolean
+        default: false
+      container_push:
+        type: boolean
+        default: false
+      toolchain_prefix:
+        type: string
+        default: '/opt/toolchain'
+      runner_selection-aarch64:
+        type: string
+        default: linux-aarch64
+      runner_selection-x86_64:
+        type: string
+        default: linux-x86_64
+      package_prefix-almalinux:
+        type: string
+        default: 'opt-toolchain-'
+      package_prefix-ubuntu:
+        type: string
+        default: 'opt+toolchain-'
   workflow_dispatch:
     inputs:
       enable_build_images:
@@ -22,6 +57,9 @@ on:
         type: boolean
         default: false
       ubuntu-x86_64-enabled:
+        type: boolean
+        default: false
+      container_push:
         type: boolean
         default: false
       toolchain_prefix:
@@ -79,6 +117,7 @@ jobs:
       package_prefix: ${{ matrix.package_prefix }}
       container_registry: ${{ vars.NEXUS_REGISTRY }}
       container_username: ${{ vars.NEXUS_CI_USER }}
+      container_push: ${{ inputs.container_push }}
       python_requirements: "src/requirements.txt"
     secrets:
       container_password: ${{ secrets.NEXUS_CI_PASSWORD }}
@@ -124,6 +163,7 @@ jobs:
       package_prefix: ${{ matrix.package_prefix }}
       container_registry: ${{ vars.NEXUS_REGISTRY }}
       container_username: ${{ vars.NEXUS_CI_USER }}
+      container_push: ${{ inputs.container_push }}
       python_requirements: "src/requirements.txt"
     secrets:
       container_password: ${{ secrets.NEXUS_CI_PASSWORD }}
@@ -170,6 +210,7 @@ jobs:
       package_prefix: ${{ matrix.package_prefix }}
       container_registry: ${{ vars.NEXUS_REGISTRY }}
       container_username: ${{ vars.NEXUS_CI_USER }}
+      container_push: ${{ inputs.container_push }}
       python_requirements: "src/requirements.txt"
     secrets:
       container_password: ${{ secrets.NEXUS_CI_PASSWORD }}
@@ -216,6 +257,7 @@ jobs:
       package_prefix: ${{ matrix.package_prefix }}
       container_registry: ${{ vars.NEXUS_REGISTRY }}
       container_username: ${{ vars.NEXUS_CI_USER }}
+      container_push: ${{ inputs.container_push }}
       python_requirements: "src/requirements.txt"
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
