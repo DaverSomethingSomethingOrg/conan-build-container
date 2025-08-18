@@ -37,10 +37,13 @@ on:
         type: string
         required: false
       container_registry:
+        type: string
         required: false
       container_username:
+        type: string
         required: false
       python_requirements:
+        type: string
         required: false
     secrets:
       GITHUB_TOKEN:
