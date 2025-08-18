@@ -17,11 +17,7 @@ RUN apt-get update \
       python3 \
       python-is-python3 \
       python3-pip \
-      python3-venv \
-      build-essential \
-      devscripts \
-      debhelper \
-      fakeroot
+      python3-venv
 
 # Copy over any needed source files or configuration
 COPY config /
@@ -65,7 +61,11 @@ RUN apt-get update \
       cmake \
       binutils \
       gcc \
-      g++
+      g++ \
+      dpkg-dev \
+      devscripts \
+      debhelper \
+      fakeroot
 
 # Now that we have a build-worthy environment, detect conan default profile
 # - Do it here to save more time starting the build!
@@ -84,7 +84,11 @@ RUN apt-get update \
       ${PKG_PREFIX}make \
       ${PKG_PREFIX}cmake \
       ${PKG_PREFIX}binutils \
-      ${PKG_PREFIX}gcc
+      ${PKG_PREFIX}gcc \
+      dpkg-dev \
+      devscripts \
+      debhelper \
+      fakeroot
 
 ENV PATH="${VIRTUAL_ENV}/bin:${TOOLCHAIN_PREFIX}/bin:${MINIMAL_PATH}"
 
