@@ -1,8 +1,6 @@
 FROM ubuntu:latest AS conan-base
 
-# Copy over any needed source files or configuration
-COPY config /
-
+# Set up a baseline install before proceeding with our customizations
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
  && apt-get install --no-install-recommends -y \
@@ -25,17 +23,21 @@ RUN apt-get update \
       debhelper \
       fakeroot
 
+# Copy over any needed source files or configuration
+COPY config /
+
 # Setup Certs and toolchain Apt repo(s)
 COPY keys/ /tmp/keys/
 RUN if [ -f "/tmp/keys/InternalCA.crt" ]; then \
       mv /tmp/keys/InternalCA.crt /usr/local/share/ca-certificates/; \
-      update-ca-certificates; \
     fi; \
     \
     if [ -f "/tmp/keys/internal-keyring.gpg" ]; then \
       mv /tmp/keys/internal-keyring.gpg /etc/apt/trusted.gpg.d; \
     fi; \
     rm -fR /tmp/keys/;
+    
+RUN update-ca-certificates
 
 ENV MINIMAL_PATH="${PATH}"
 ENV CC=gcc

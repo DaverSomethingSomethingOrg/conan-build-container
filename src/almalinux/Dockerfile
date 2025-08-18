@@ -1,11 +1,8 @@
 FROM almalinux:latest AS conan-base
 
-# Copy over any needed source files or configuration
-COPY config /
-
+# Set up a baseline install before proceeding with our customizations
 RUN dnf install -y 'dnf-command(config-manager)' yum-utils
 RUN yum-config-manager --enable crb
-
 RUN yum install -y \
     ca-certificates \
     gnupg2 \
@@ -32,6 +29,9 @@ RUN yum install -y \
     libstdc++-devel \
     glibc-devel \
     glibc-headers
+
+# Copy over any needed source files or configuration
+COPY config /
 
 # Setup Certs and toolchain Yum repo(s)
 COPY keys/ /tmp/keys/
