@@ -93,6 +93,7 @@ jobs:
 
   conan-bootstrap:
     name: conan-bootstrap-${{ matrix.os_name }}:${{ matrix.arch }}-latest
+    needs: conan-base
     strategy:
       fail-fast: false
       max-parallel: 4
@@ -141,6 +142,7 @@ jobs:
   conan-build:
     name: conan-build-${{ matrix.os_name }}:${{ matrix.arch }}-latest
     if: ${{ inputs.enable_build_images }}
+    needs: conan-bootstrap
     strategy:
       fail-fast: false
       max-parallel: 4
@@ -189,6 +191,7 @@ jobs:
   conan-docker-build:
     name: conan-docker-build-${{ matrix.os_name }}:${{ matrix.arch }}-latest
     if: ${{ inputs.enable_build_images }}
+    needs: conan-build
     strategy:
       fail-fast: false
       max-parallel: 4
