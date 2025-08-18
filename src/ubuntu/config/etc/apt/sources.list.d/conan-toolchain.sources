@@ -2,4 +2,4 @@ Types: deb
 URIs: https://nexus.homelab/repository/apt-homelab
 Suites: noble
 Components: main
-Signed-By: /etc/apt/trusted.gpg.d/conan-toolchain-keyring.gpg
+Signed-By: /etc/apt/trusted.gpg.d/internal-keyring.gpg
