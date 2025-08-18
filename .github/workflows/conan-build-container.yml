@@ -51,28 +51,23 @@ jobs:
           - image_tag: "nexus.homelab/conan-base-almalinux:aarch64-latest"
             is_enabled: ${{ inputs.almalinux-aarch64-enabled }}
             runner_selection: ${{ inputs.runner_selection-aarch64 }}
-            # dockerfile: "src/almalinux/Dockerfile"
             docker_context: "src/almalinux"
             package_prefix: ${{ inputs.package_prefix-almalinux }}
           - image_tag: "nexus.homelab/conan-base-almalinux:x86_64-latest"
             is_enabled: ${{ inputs.almalinux-x86_64-enabled }}
             runner_selection: ${{ inputs.runner_selection-x86_64 }}
-            # dockerfile: "src/almalinux/Dockerfile"
             docker_context: "src/almalinux"
             package_prefix: ${{ inputs.package_prefix-almalinux }}
           - image_tag: "nexus.homelab/conan-base-ubuntu:aarch64-latest"
             is_enabled: ${{ inputs.ubuntu-aarch64-enabled }}
             runner_selection: ${{ inputs.runner_selection-aarch64 }}
-            # dockerfile: "src/ubuntu/Dockerfile"
             docker_context: "src/ubuntu"
             package_prefix: ${{ inputs.package_prefix-ubuntu }}
           - image_tag: "nexus.homelab/conan-base-ubuntu:x86_64-latest"
             is_enabled: ${{ inputs.ubuntu-x86_64-enabled }}
             runner_selection: ${{ inputs.runner_selection-x86_64 }}
-            # dockerfile: "src/ubuntu/Dockerfile"
             docker_context: "src/ubuntu"
             package_prefix: ${{ inputs.package_prefix-ubuntu }}
-#    uses: ./.github/workflows/docker-singlePlatform.yml
     uses: DaverSomethingSomethingOrg/conan-github-workflows/.github/workflows/docker-singlePlatform.yml@main
     with:
       is_enabled: ${{ matrix.is_enabled }}
@@ -80,7 +75,6 @@ jobs:
       toolchain_prefix: ${{ inputs.toolchain_prefix }}
       build_target: 'conan-base'
       image_tag: ${{ matrix.image_tag }}
-      # dockerfile: ${{ matrix.dockerfile }}
       docker_context: ${{ matrix.docker_context }}
       package_prefix: ${{ matrix.package_prefix }}
       container_registry: ${{ vars.NEXUS_REGISTRY }}
@@ -102,28 +96,23 @@ jobs:
           - image_tag: "nexus.homelab/conan-bootstrap-almalinux:aarch64-latest"
             is_enabled: ${{ inputs.almalinux-aarch64-enabled }}
             runner_selection: ${{ inputs.runner_selection-aarch64 }}
-            # dockerfile: "src/almalinux/Dockerfile"
             docker_context: "src/almalinux"
             package_prefix: ${{ inputs.package_prefix-almalinux }}
           - image_tag: "nexus.homelab/conan-bootstrap-almalinux:x86_64-latest"
             is_enabled: ${{ inputs.almalinux-x86_64-enabled }}
             runner_selection: ${{ inputs.runner_selection-x86_64 }}
-            # dockerfile: "src/almalinux/Dockerfile"
             docker_context: "src/almalinux"
             package_prefix: ${{ inputs.package_prefix-almalinux }}
           - image_tag: "nexus.homelab/conan-bootstrap-ubuntu:aarch64-latest"
             is_enabled: ${{ inputs.ubuntu-aarch64-enabled }}
             runner_selection: ${{ inputs.runner_selection-aarch64 }}
-            # dockerfile: "src/ubuntu/Dockerfile"
             docker_context: "src/ubuntu"
             package_prefix: ${{ inputs.package_prefix-ubuntu }}
           - image_tag: "nexus.homelab/conan-bootstrap-ubuntu:x86_64-latest"
             is_enabled: ${{ inputs.ubuntu-x86_64-enabled }}
             runner_selection: ${{ inputs.runner_selection-x86_64 }}
-            # dockerfile: "src/ubuntu/Dockerfile"
             docker_context: "src/ubuntu"
             package_prefix: ${{ inputs.package_prefix-ubuntu }}
-#    uses: ./.github/workflows/docker-singlePlatform.yml
     uses: DaverSomethingSomethingOrg/conan-github-workflows/.github/workflows/docker-singlePlatform.yml@main
     with:
       is_enabled: ${{ matrix.is_enabled }}
@@ -131,7 +120,6 @@ jobs:
       toolchain_prefix: ${{ inputs.toolchain_prefix }}
       build_target: 'conan-bootstrap'
       image_tag: ${{ matrix.image_tag }}
-      # dockerfile: ${{ matrix.dockerfile }}
       docker_context: ${{ matrix.docker_context }}
       package_prefix: ${{ matrix.package_prefix }}
       container_registry: ${{ vars.NEXUS_REGISTRY }}
@@ -154,28 +142,23 @@ jobs:
           - image_tag: "nexus.homelab/conan-build-almalinux:aarch64-latest"
             is_enabled: ${{ inputs.almalinux-aarch64-enabled }}
             runner_selection: ${{ inputs.runner_selection-aarch64 }}
-            # dockerfile: "src/almalinux/Dockerfile"
             docker_context: "src/almalinux"
             package_prefix: ${{ inputs.package_prefix-almalinux }}
           - image_tag: "nexus.homelab/conan-build-almalinux:x86_64-latest"
             is_enabled: ${{ inputs.almalinux-x86_64-enabled }}
             runner_selection: ${{ inputs.runner_selection-x86_64 }}
-            # dockerfile: "src/almalinux/Dockerfile"
             docker_context: "src/almalinux"
             package_prefix: ${{ inputs.package_prefix-almalinux }}
           - image_tag: "nexus.homelab/conan-build-ubuntu:aarch64-latest"
             is_enabled: ${{ inputs.ubuntu-aarch64-enabled }}
             runner_selection: ${{ inputs.runner_selection-aarch64 }}
-            # dockerfile: "src/ubuntu/Dockerfile"
             docker_context: "src/ubuntu"
             package_prefix: ${{ inputs.package_prefix-ubuntu }}
           - image_tag: "nexus.homelab/conan-build-ubuntu:x86_64-latest"
             is_enabled: ${{ inputs.ubuntu-x86_64-enabled }}
             runner_selection: ${{ inputs.runner_selection-x86_64 }}
-            # dockerfile: "src/ubuntu/Dockerfile"
             docker_context: "src/ubuntu"
             package_prefix: ${{ inputs.package_prefix-ubuntu }}
-#    uses: ./.github/workflows/docker-singlePlatform.yml
     uses: DaverSomethingSomethingOrg/conan-github-workflows/.github/workflows/docker-singlePlatform.yml@main
     with:
       is_enabled: ${{ matrix.is_enabled }}
@@ -183,7 +166,6 @@ jobs:
       toolchain_prefix: ${{ inputs.toolchain_prefix }}
       build_target: 'conan-build'
       image_tag: ${{ matrix.image_tag }}
-      # dockerfile: ${{ matrix.dockerfile }}
       docker_context: ${{ matrix.docker_context }}
       package_prefix: ${{ matrix.package_prefix }}
       container_registry: ${{ vars.NEXUS_REGISTRY }}
@@ -206,28 +188,23 @@ jobs:
           - image_tag: "nexus.homelab/conan-docker-build-almalinux:aarch64-latest"
             is_enabled: ${{ inputs.almalinux-aarch64-enabled }}
             runner_selection: ${{ inputs.runner_selection-aarch64 }}
-            # dockerfile: "src/almalinux/Dockerfile"
             docker_context: "src/almalinux"
             package_prefix: ${{ inputs.package_prefix-almalinux }}
           - image_tag: "nexus.homelab/conan-docker-build-almalinux:x86_64-latest"
             is_enabled: ${{ inputs.almalinux-x86_64-enabled }}
             runner_selection: ${{ inputs.runner_selection-x86_64 }}
-            # dockerfile: "src/almalinux/Dockerfile"
             docker_context: "src/almalinux"
             package_prefix: ${{ inputs.package_prefix-almalinux }}
           - image_tag: "nexus.homelab/conan-docker-build-ubuntu:aarch64-latest"
             is_enabled: ${{ inputs.ubuntu-aarch64-enabled }}
             runner_selection: ${{ inputs.runner_selection-aarch64 }}
-            # dockerfile: "src/ubuntu/Dockerfile"
             docker_context: "src/ubuntu"
             package_prefix: ${{ inputs.package_prefix-ubuntu }}
           - image_tag: "nexus.homelab/conan-docker-build-ubuntu:x86_64-latest"
             is_enabled: ${{ inputs.ubuntu-x86_64-enabled }}
             runner_selection: ${{ inputs.runner_selection-x86_64 }}
-            # dockerfile: "src/ubuntu/Dockerfile"
             docker_context: "src/ubuntu"
             package_prefix: ${{ inputs.package_prefix-ubuntu }}
-#    uses: ./.github/workflows/docker-singlePlatform.yml
     uses: DaverSomethingSomethingOrg/conan-github-workflows/.github/workflows/docker-singlePlatform.yml@main
     with:
       is_enabled: ${{ matrix.is_enabled }}
@@ -235,7 +212,6 @@ jobs:
       toolchain_prefix: ${{ inputs.toolchain_prefix }}
       build_target: 'conan-docker-build'
       image_tag: ${{ matrix.image_tag }}
-      # dockerfile: ${{ matrix.dockerfile }}
       docker_context: ${{ matrix.docker_context }}
       package_prefix: ${{ matrix.package_prefix }}
       container_registry: ${{ vars.NEXUS_REGISTRY }}
