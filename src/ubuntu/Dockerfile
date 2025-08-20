@@ -14,6 +14,7 @@ RUN apt-get update \
       wget \
       vim \
       less \
+      libc6-dev \
       python3 \
       python-is-python3 \
       python3-pip \
