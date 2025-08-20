@@ -14,11 +14,18 @@ RUN apt-get update \
       wget \
       vim \
       less \
-      libc6-dev \
+      build-essential \
+      dpkg-dev \
+      devscripts \
+      debhelper \
+      fakeroot \
       python3 \
       python-is-python3 \
       python3-pip \
       python3-venv
+
+#TODO How do we get rid of/limit build-essential from our image and still
+#     run our custom Conan deployer / package generator?
 
 # Copy over any needed source files or configuration
 COPY config /
@@ -62,12 +69,7 @@ RUN apt-get update \
       cmake \
       binutils \
       gcc \
-      g++ \
-      dpkg-dev \
-      build-essential \
-      devscripts \
-      debhelper \
-      fakeroot
+      g++
 
 # Now that we have a build-worthy environment, detect conan default profile
 # - Do it here to save more time starting the build!
@@ -86,15 +88,7 @@ RUN apt-get update \
       ${PKG_PREFIX}make \
       ${PKG_PREFIX}cmake \
       ${PKG_PREFIX}binutils \
-      ${PKG_PREFIX}gcc \
-      dpkg-dev \
-      build-essential \
-      devscripts \
-      debhelper \
-      fakeroot
-
-#TODO How do we get rid of/limit build-essential from our image and still
-#     run our custom Conan deployer / package generator?
+      ${PKG_PREFIX}gcc
 
 ENV PATH="${VIRTUAL_ENV}/bin:${TOOLCHAIN_PREFIX}/bin:${MINIMAL_PATH}"
 
