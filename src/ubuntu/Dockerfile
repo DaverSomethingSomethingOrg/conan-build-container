@@ -63,6 +63,7 @@ RUN apt-get update \
       gcc \
       g++ \
       dpkg-dev \
+      build-essential \
       devscripts \
       debhelper \
       fakeroot
@@ -86,9 +87,13 @@ RUN apt-get update \
       ${PKG_PREFIX}binutils \
       ${PKG_PREFIX}gcc \
       dpkg-dev \
+      build-essential \
       devscripts \
       debhelper \
       fakeroot
+
+#TODO How do we get rid of/limit build-essential from our image and still
+#     run our custom Conan deployer / package generator?
 
 ENV PATH="${VIRTUAL_ENV}/bin:${TOOLCHAIN_PREFIX}/bin:${MINIMAL_PATH}"
 
