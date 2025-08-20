@@ -1,5 +1,6 @@
 virtualenv
 conan
+pip-system-certs
 mkdocs-techdocs-core
 mkdocs-material
 mkdocs-awesome-pages-plugin
