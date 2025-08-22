@@ -1,9 +1,9 @@
 FROM almalinux:latest AS conan-base
 
 # Set up a baseline install before proceeding with our customizations
-RUN dnf install -y 'dnf-command(config-manager)' yum-utils
-RUN yum-config-manager --enable crb
-RUN yum install -y \
+RUN dnf install -y 'dnf-command(config-manager)' yum-utils \
+ && yum-config-manager --enable crb \
+ && yum install -y \
     ca-certificates \
     gnupg2 \
     openssh \
@@ -97,14 +97,10 @@ RUN conan profile detect
 #
 FROM conan-build AS conan-docker-build
 
-# Configure Docker CE repo
-RUN dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-
-# Configure the GitHub repo for the gh client
-RUN dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
-
-# VS Code requires git so we do that in Dockerfile before we get here
-RUN yum install -y \
+# Configure Docker and GitHub repos and install clients
+RUN dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo \
+ && dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo \
+ && yum install -y \
     docker-ce \
     gh \
     ;
