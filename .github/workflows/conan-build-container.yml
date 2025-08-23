@@ -7,32 +7,6 @@
 name: Conan C/C++ toolchain build container
 
 on:
-  workflow_call:
-    inputs:
-      enable_build_images:
-        type: boolean
-        default: true
-      almalinux-aarch64-enabled:
-        type: boolean
-        default: false
-      almalinux-x86_64-enabled:
-        type: boolean
-        default: false
-      ubuntu-aarch64-enabled:
-        type: boolean
-        default: false
-      ubuntu-x86_64-enabled:
-        type: boolean
-        default: false
-      container_push:
-        type: boolean
-        default: false
-      runner_selection-aarch64:
-        type: string
-        default: linux-aarch64
-      runner_selection-x86_64:
-        type: string
-        default: linux-x86_64
   workflow_dispatch:
     inputs:
       enable_build_images:

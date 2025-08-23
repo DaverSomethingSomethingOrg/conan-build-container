@@ -110,7 +110,7 @@ for os_name in 'almalinux' 'ubuntu'; do
     pkg_prefix_varname="PKG_PREFIX_${os_name}"
     PKG_PREFIX="${!pkg_prefix_varname}"
 
-    cp src/requirements.txt "src/${os_name}"
+    cp src/requirements.txt "src/${os_name}/python-requirements.txt"
 
     set -e
     docker pull "${os_name}:latest"
